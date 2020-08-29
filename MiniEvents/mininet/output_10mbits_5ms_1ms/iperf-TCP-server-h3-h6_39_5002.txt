@@ -1,0 +1,21 @@
+------------------------------------------------------------
+Server listening on TCP port 5002
+TCP window size: 85.3 KByte (default)
+------------------------------------------------------------
+[  4] local 10.0.0.6 port 5002 connected with 10.0.0.3 port 41166
+[ ID] Interval       Transfer     Bandwidth
+[  4]  0.0- 0.0 sec  0.00 Bytes  0.00 bits/sec
+[  5] local 10.0.0.6 port 5002 connected with 10.0.0.3 port 41168
+[  5]  0.0- 0.0 sec  0.00 Bytes  0.00 bits/sec
+[  4] local 10.0.0.6 port 5002 connected with 10.0.0.3 port 41169
+[  4]  0.0- 1.0 sec  87.9 KBytes   720 Kbits/sec
+[  4]  1.0- 2.0 sec   216 KBytes  1.77 Mbits/sec
+[  4]  2.0- 3.0 sec   746 KBytes  6.11 Mbits/sec
+[  4]  3.0- 4.0 sec   213 KBytes  1.75 Mbits/sec
+[  4]  4.0- 5.0 sec   286 KBytes  2.35 Mbits/sec
+[  4]  5.0- 6.0 sec   776 KBytes  6.36 Mbits/sec
+[  4]  6.0- 7.0 sec   675 KBytes  5.53 Mbits/sec
+[  4]  7.0- 8.0 sec   143 KBytes  1.17 Mbits/sec
+[  4]  8.0- 9.0 sec  41.8 KBytes   343 Kbits/sec
+[  4]  9.0-10.0 sec   252 KBytes  2.06 Mbits/sec
+[  4]  0.0-10.2 sec  3.62 MBytes  2.97 Mbits/sec

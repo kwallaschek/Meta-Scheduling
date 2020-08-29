@@ -1,0 +1,8 @@
+PING 11.0.0.5 (11.0.0.5) 56(84) bytes of data.
+64 bytes from 11.0.0.5: icmp_seq=1 ttl=64 time=192 ms
+64 bytes from 11.0.0.5: icmp_seq=2 ttl=64 time=121 ms
+64 bytes from 11.0.0.5: icmp_seq=3 ttl=64 time=120 ms
+
+--- 11.0.0.5 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 120.263/144.629/192.140/33.600 ms

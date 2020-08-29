@@ -1,0 +1,45 @@
+[
+	{
+		"time": 1,
+		"type": "init",
+		"params": {
+			"num": 3
+		}
+	},
+  {
+      "time": 4,
+      "type": "iperf",
+      "params": {
+        "src": "h2",
+        "dst": "h1",
+        "port": 5003,
+        "duration": 10
+       }
+    }, 
+  	{
+    	"time": 4,
+    	"type": "iperf",
+    	"params": {
+   	 	  "src": "h2",
+    	  "dst": "h1",
+    	  "port": 5001,
+   	 	  "duration": 10
+   		 }
+  	}, 
+  	{
+    	"time": 4,
+    	"type": "iperf",
+    	"params": {
+   	 	  "src": "h3",
+    	  "dst": "h1",
+    	  "port": 5002,
+   	 	  "duration": 10
+   		 }
+  	}, 
+{
+    "time": 20,
+    "type": "stop",
+    "params": {
+    }
+  }
+]

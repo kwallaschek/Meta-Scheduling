@@ -1,0 +1,67 @@
+SCHEDULER out;
+
+IF (R5 == 4){
+	 SET(R5, 0);
+}
+IF (R6 == 5){
+	 SET(R6, 0);
+}
+SET(R2,0);
+SET(R3,0);
+SET(R4,0);
+
+
+VAR sbfCandidates = SUBFLOWS.FILTER(sbf => sbf.CWND > sbf.SKBS_IN_FLIGHT + sbf.QUEUED AND !sbf.THROTTLED AND !sbf.LOSSY);
+
+IF (!RQ.EMPTY) {
+		IF (!SUBFLOWS.FILTER(sbf => !RQ.TOP.SENT_ON(sbf)).EMPTY) {
+   		DROP( RQ.POP());
+    		RETURN;}
+		ELSE {
+    		VAR retransmissionCandidates = sbfCandidates.FILTER(sbf => sbf.HAS_WINDOW_FOR(RQ.TOP) AND !RQ.TOP.SENT_ON(sbf));
+    		IF(!retransmissionCandidates.EMPTY) {
+        		FOREACH(VAR sbf IN retransmissionCandidates) {
+         		sbf.PUSH(RQ.TOP);
+				}
+				RETURN;
+    		}
+		}
+}
+
+
+IF (!Q.EMPTY) {
+	VAR n25 = SUBFLOWS.MIN(sbf => sbf.CWND).CWND/SUBFLOWS.MAX(sbf => sbf.CWND).CWND * 100;
+
+	VAR n30 = SUBFLOWS.COUNT * 100;
+
+	VAR n34 = SUBFLOWS.MIN(sbf => sbf.RTT).RTT/SUBFLOWS.MAX(sbf => sbf.RTT).RTT * 100;
+
+	VAR pos13 = SUBFLOWS.MIN(sbf => sbf.RTT_VAR).RTT_VAR/SUBFLOWS.MAX(sbf => sbf.RTT_VAR).RTT_VAR * 118 + n25 * 94 + n34 * 112; 
+	VAR neg13 = SUBFLOWS.COUNT * 94; 
+	IF (neg13 > pos13) {
+		SET(R3,0);
+	} ELSE { 
+		SET(R3, pos13 - neg13);
+	}
+	VAR n13 = R3;
+
+	VAR pos14 = SUBFLOWS.MIN(sbf => sbf.RTT).RTT/SUBFLOWS.MAX(sbf => sbf.RTT).RTT * 113 + n13 * 150 + n30 * 5; 
+	VAR neg14 = SUBFLOWS.MIN(sbf => sbf.RTT_VAR).RTT_VAR/SUBFLOWS.MAX(sbf => sbf.RTT_VAR).RTT_VAR * 54 + SUBFLOWS.MIN(sbf => sbf.CWND).CWND/SUBFLOWS.MAX(sbf => sbf.CWND).CWND * 89; 
+	IF (neg14 > pos14) {
+		SET(R3,0);
+	} ELSE { 
+		SET(R3, pos14 - neg14);
+	}
+	VAR n14 = R3;
+
+	IF (n13>n14){
+		SET(R6,SUBFLOWS.FILTER(sbf => sbf.HAS_WINDOW_FOR(Q.TOP)).MIN(sbf => sbf.RTT).ID);
+		SUBFLOWS.GET(R6).PUSH(Q.POP());
+	} ELSE {
+		SET(R6, R6+1);
+		IF (R6+1 > SUBFLOWS.COUNT){
+			SET(R6,0);
+ 		}
+		SUBFLOWS.GET(R6).PUSH(Q.POP());
+	}
+}

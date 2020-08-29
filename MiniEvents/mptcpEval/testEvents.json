@@ -1,0 +1,42 @@
+[
+	{
+		"time": 0,
+		"type": "editLink",
+		"params": {
+			"src": "h2",
+			"dst": "s1",
+			"bw" : 100,
+			"delay": 20
+		}
+	},
+
+	{
+		"time": 0,
+		"type": "editLink",
+		"params": {
+			"src": "h2",
+			"dst": "s1",
+			"bw" : 20,
+			"delay": 20
+		}
+	},
+  	{
+    	"time": 2,
+    	"type": "iperf",
+    	"params": {
+   	 	  "src": "h1",
+    	  "dst": "h2",
+   	 	  "duration": 20
+   		 }
+  	},
+	{
+		"time": 10,
+		"type": "editLink",
+		"params": {
+			"src": "h2",
+			"dst": "s1",
+			"bw" : 20,
+			"delay": 10
+		}
+	},
+]

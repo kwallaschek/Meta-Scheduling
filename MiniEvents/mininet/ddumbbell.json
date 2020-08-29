@@ -1,0 +1,93 @@
+[
+	{
+		"time": 1,
+		"type": "init",
+		"params": {
+			"num": "dd"
+		}
+	},
+  {
+      "time": 4,
+      "type": "ping",
+      "params": {
+        "src": "h1",
+        "dst": "h4"
+       }
+    },
+  {
+      "time": 4,
+      "type": "ping",
+      "params": {
+        "src": "h2",
+        "dst": "h5"
+       }
+    }, 
+  {
+      "time": 4,
+      "type": "ping",
+      "params": {
+        "src": "h3",
+        "dst": "h6"
+       }
+    }, 
+  {
+      "time": 4,
+      "type": "ping",
+      "params": {
+        "src": "h4",
+        "dst": "h1"
+       }
+    },
+  {
+      "time": 4,
+      "type": "ping",
+      "params": {
+        "src": "h5",
+        "dst": "h2"
+       }
+    }, 
+  {
+      "time": 4,
+      "type": "ping",
+      "params": {
+        "src": "h6",
+        "dst": "h3"
+       }
+    },
+  {
+      "time": 6,
+      "type": "iperf",
+      "params": {
+        "src": "h2",
+        "dst": "h5",
+        "port": 5003,
+        "duration": 10
+       }
+    }, 
+  	{
+    	"time": 6,
+    	"type": "iperf",
+    	"params": {
+   	 	  "src": "h1",
+    	  "dst": "h4",
+    	  "port": 5001,
+   	 	  "duration": 10
+   		 }
+  	}, 
+  	{
+    	"time": 6,
+    	"type": "iperf",
+    	"params": {
+   	 	  "src": "h3",
+    	  "dst": "h6",
+    	  "port": 5002,
+   	 	  "duration": 10
+   		 }
+  	}, 
+{
+    "time": 20,
+    "type": "stop",
+    "params": {
+    }
+  }
+]

@@ -1,0 +1,10 @@
+prefix=/usr/local
+libdir=/usr/local/lib
+includedir=/usr/local/include/ns3.19
+
+Name: libns3-test
+Description: ns-3 module ns3-test
+Version: 3.19
+Libs: -L${libdir} -Wl,-Bdynamic -lns3.19-test-optimized
+Cflags: -I${includedir}
+Requires: libns3.19-internet-optimized libns3.19-mobility-optimized libns3.19-applications-optimized libns3.19-csma-optimized libns3.19-bridge-optimized libns3.19-config-store-optimized libns3.19-point-to-point-optimized libns3.19-csma-layout-optimized libns3.19-flow-monitor-optimized libns3.19-wifi-optimized

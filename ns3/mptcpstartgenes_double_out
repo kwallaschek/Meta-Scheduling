@@ -1,0 +1,44 @@
+genomestart 1
+trait 1 0.1 0 0 0 0 0 0 0
+trait 2 0.2 0 0 0 0 0 0 0
+trait 3 0.3 0 0 0 0 0 0 0
+trait 4 0.1 0 0 0 0 0 0 0
+trait 5 0.2 0 0 0 0 0 0 0
+trait 6 0.3 0 0 0 0 0 0 0
+trait 7 0.1 0 0 0 0 0 0 0
+trait 8 0.2 0 0 0 0 0 0 0
+trait 9 0.3 0 0 0 0 0 0 0
+trait 10 0.1 0 0 0 0 0 0 0
+trait 11 0.2 0 0 0 0 0 0 0
+trait 12 0.3 0 0 0 0 0 0 0
+trait 13 0.1 0 0 0 0 0 0 0
+trait 14 0.2 0 0 0 0 0 0 0
+trait 15 0.3 0 0 0 0 0 0 0
+trait 16 0.1 0 0 0 0 0 0 0
+node 1 0 1 1
+node 2 0 1 1
+node 3 0 1 1
+node 4 0 1 1
+node 5 0 1 1
+node 6 0 1 1
+node 7 0 1 1
+node 8 0 1 1
+node 9 0 0 2
+node 10 0 0 2  
+gene 1 1 9 0.0 0 1 0 1
+gene 2 2 9 0.0 0 2 0 1
+gene 3 3 9 0.0 0 3 0 1
+gene 4 4 9 0.0 0 4 0 1
+gene 5 5 9 0.0 0 5 0 1
+gene 6 6 9 0.0 0 6 0 1
+gene 7 7 9 0.0 0 7 0 1
+gene 8 8 9 0.0 0 8 0 1
+gene 9 1 10 0.0 0 1 0 1
+gene 10 2 10 0.0 0 2 0 1
+gene 11 3 10 0.0 0 3 0 1
+gene 12 4 10 0.0 0 4 0 1
+gene 13 5 10 0.0 0 5 0 1
+gene 14 6 10 0.0 0 6 0 1
+gene 15 7 10 0.0 0 7 0 1
+gene 16 8 10 0.0 0 8 0 1
+genomeend 1

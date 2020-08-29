@@ -1,0 +1,32 @@
+/*
+ * Redundant scheduler.
+ */
+SCHEDULER redundantScheduler;
+
+VAR sbfCandidates = SUBFLOWS.FILTER(sbf => sbf.CWND > sbf.SKBS_IN_FLIGHT + sbf.QUEUED AND !sbf.THROTTLED AND !sbf.LOSSY);
+
+/* Retransmissions on all subflows */
+IF (!RQ.EMPTY) {
+    IF (!SUBFLOWS.FILTER(sbf => !RQ.TOP.SENT_ON(sbf)).EMPTY) {
+        DROP( RQ.POP());
+        RETURN;
+    } ELSE {
+        VAR retransmissionCandidates = sbfCandidates.FILTER(sbf => sbf.HAS_WINDOW_FOR(RQ.TOP) AND !RQ.TOP.SENT_ON(sbf));
+        IF(!retransmissionCandidates.EMPTY) {
+            FOREACH(VAR sbf IN retransmissionCandidates) {
+                sbf.PUSH(RQ.TOP);
+            }
+            RETURN;
+        }
+    }
+}
+
+FOREACH(VAR sbf IN sbfCandidates) {
+    VAR skb = QU.FILTER(skb => !skb.SENT_ON(sbf)).TOP;
+    /* are all QU packets sent on this sbf? */
+    IF(skb != NULL) {
+        sbf.PUSH(skb);
+    } ELSE {
+        sbf.PUSH(Q.POP());
+    }
+}

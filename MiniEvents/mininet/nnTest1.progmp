@@ -1,0 +1,217 @@
+/*
+ * Scheduler sending packets on the subflow with the lowest RTT which has cwnd.
+ */
+
+SCHEDULER nnTest3;
+
+
+VAR alpha = 2;
+VAR reluPoint = 100;
+
+/*
+ * Init Register (All Weights to 10)
+ */
+IF (R1 == 0) {
+  SET(R1,100010);
+  SET(R2,100010);
+  SET(R3,100010);
+  SET(R4,100010);
+  SET(R5,0);
+  SET(R6,0);
+}
+
+/*
+ * Translate Register into Weights
+ */
+VAR tmp = (R1/10000);
+VAR w1 = tmp;
+VAR w2 = R1 - (tmp*10000);
+VAR tmp = (R2/10000);
+VAR w3 = tmp;
+VAR w4 = R2 - (tmp*10000);
+VAR tmp = (R3/10000);
+VAR w5 = tmp;
+VAR w6 = R3 - (tmp*10000);
+VAR tmp = (R4/10000);
+VAR w7 = tmp;
+VAR w8 = R4 - (tmp*10000);
+
+VAR tmp5 = (R5/10000);
+VAR fitness1 = tmp5;
+VAR fitness2 = R5 - (tmp5*10000);
+VAR tmp6 = (R6/10000);
+VAR fitness3 = tmp6;
+VAR fitness4 = R6 - (tmp6*10000);
+
+
+VAR sbfCandidates = SUBFLOWS.FILTER(sbf => sbf.CWND > sbf.SKBS_IN_FLIGHT + sbf.QUEUED AND !sbf.THROTTLED AND !sbf.LOSSY);
+
+IF(sbfCandidates.EMPTY) {
+  RETURN;
+}
+
+/* Retransmissions on all subflows */
+IF (!RQ.EMPTY) {
+    IF (!SUBFLOWS.FILTER(sbf => !RQ.TOP.SENT_ON(sbf)).EMPTY) {
+        DROP( RQ.POP());
+        RETURN;
+    } ELSE {
+        VAR retransmissionCandidates = sbfCandidates.FILTER(sbf => sbf.HAS_WINDOW_FOR(RQ.TOP) AND !RQ.TOP.SENT_ON(sbf));
+        IF(!retransmissionCandidates.EMPTY) {
+            FOREACH(VAR sbf IN retransmissionCandidates) {
+                sbf.PUSH(RQ.TOP);
+            }
+            RETURN;
+        }
+    }
+}
+
+
+ 
+
+/*
+ * Evaluate all subflows with NN and send on max value sbf
+ */
+IF (!Q.EMPTY) {
+  VAR sbfs = SUBFLOWS.FILTER(sbf => !sbf.THROTTLED AND !sbf.LOSSY);
+  
+  /*
+   * R1 = fitness for sbf1, sbf2
+   * R2 = fitness for sbf3, sbf4
+   */
+
+  FOREACH(VAR sbf IN sbfs) {
+
+
+
+    /* 
+     * Evaluate NN with ReLU function 
+     *
+     * Use R6 for calculations
+     */
+    
+    /*
+ 		 * N1   
+     */  
+    VAR N1_pre = sbf.LOST_SKBS * w1 + sbf.RTT * w2 + sbf.RTT_VAR * w3;
+    IF (N1_pre > reluPoint){
+      SET(R6, N1_pre);
+    }
+    VAR N1 = R6;
+    SET(R6, reluPoint);
+
+    /*
+ 		 * N2   
+     */
+    VAR N2_pre = sbf.LOST_SKBS * w4 + sbf.RTT * w5 + sbf.RTT_VAR * w6;
+    IF (N2_pre > reluPoint){
+      SET(R6, N2_pre);
+    }
+    VAR N2 = R6; 
+    SET(R6, reluPoint);
+
+    /*
+ 		 * N3   
+     */
+    VAR N3_pre = N1 * w7 + N2 * w8;
+    IF (N3_pre > reluPoint){
+      SET(R6, N3_pre);
+    } 
+		VAR N3 = R6;
+    
+    /**
+     * Backpropagation  TODO
+     *
+     * Use R3 and R4 for calculations
+     * 
+     */
+    VAR tmpFitness = (5*sbf.LOST_SKBS + 2*sbf.RTT + 3*sbf.RTT_VAR)/10;
+    IF (fitness1 != 0 AND sbf.ID == 0){
+      
+    	VAR t = (tmpFitness/fitness1)*reluPoint;
+    	VAR e_N3 = 2*(N3 - t);
+
+    	SET(R3, 0);
+    	SET(R4, 0);
+    	IF (N3_pre >= reluPoint){
+    		VAR tmp = e_N3 * N1;
+    		VAR tmp2 = e_N3 * N2;
+    		SET(R3, tmp);
+    		SET(R4, tmp2);
+    	}
+    	VAR e_w7 = R3;
+    	VAR e_w8 = R4;
+
+    	SET(R3, 0);
+    	SET(R4, 0);
+    	IF (N3_pre >= reluPoint){
+    		VAR tmp = e_N3 * w7;
+    		VAR tmp2 = e_N3 * w8;
+    		SET(R3, tmp);
+    		SET(R4, tmp2);
+    	}
+    	VAR e_N1 = R3;
+    	VAR e_N2 = R4;
+
+    	SET(R3, 0);
+    	SET(R4, 0);
+    	IF (N1_pre >= reluPoint){
+    		VAR tmp = e_N1 * sbf.LOST_SKBS;
+    		VAR tmp2 = e_N1 * sbf.RTT;
+    		SET(R3, tmp);
+    		SET(R4, tmp2);
+    	}
+    	VAR e_w1 = R3;
+    	VAR e_w2 = R4;
+
+    	SET(R4, 0);
+    	IF (N1_pre >= reluPoint){
+    		VAR tmp = e_N1 * sbf.RTT_VAR;
+    		SET(R4, tmp);
+    	}
+    	VAR e_w3 = R3;
+
+    	SET(R3, 0);
+    	SET(R4, 0);
+    	IF (N2_pre >= reluPoint){
+    		VAR tmp = e_N2 * sbf.LOST_SKBS;
+    		VAR tmp2 = e_N2 * sbf.RTT;
+    		SET(R3, tmp);
+    		SET(R4, tmp2);
+    	}
+    	VAR e_w4 = R3;
+    	VAR e_w5 = R4;
+
+    	SET(R4, 0);
+    	IF (N2_pre >= reluPoint){
+    		VAR tmp = e_N2 * sbf.RTT_VAR;
+    		SET(R4, tmp);
+    	}
+    	VAR e_w6 = R3;
+    }
+
+   
+  }
+  VAR sbflow = sbfs.GET(0);
+  sbflow.PUSH(Q.POP());      
+}
+
+/*
+ * Set Register to current weights
+ */
+VAR tmp7 = w1*10000 + w2;
+SET(R1, tmp7);
+VAR tmp8 = w3*10000 + w4;
+SET(R2, tmp8);
+VAR tmp9 = w5*10000 + w6;
+SET(R3, tmp9);
+VAR tmp10 = w7*10000 + w8;
+SET(R4, tmp10);
+
+/**
+ *  Set current fitness
+ */
+VAR tmp11 = fitness1*10000 + fitness2;
+SET(R5, tmp11);
+VAR tmp12 = fitness3*10000 + fitness4;
+SET(R6, tmp12);
